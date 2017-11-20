@@ -78,7 +78,7 @@ inv_cos:
 	B.NE to_radians
 exit:
 	FMOV D0, D7
-	br	X30
+	B	X30
 to_radians:
 	ADD X1, XZR, #22
 	ADD X2, XZR #7
