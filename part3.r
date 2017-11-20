@@ -53,10 +53,29 @@ norm_b:
 	ADD X8, X8, #1
 	B norm_b // loop back to this procedure
 cos_val:
-	
+	FSQRT D6, D6 //Final step to determine norm of b
+	UCVTF D9, X5 //dot product from integer to double
+	FMUL D7, D6, D5 //The product of the lengths of a and b
+	FDIV D8, D9, D7 //This is equivalent to Cos(t) = D8
+inv_cos:
+	//Clear registers, store values as doubles
+	FSUB D4, D4, D4
+	FSUB D5, D5, D5
+	FSUB D6, D6, D6
+	FSUB D7, D7, D7
+	ADD X5, XZR, #1
+	ADD, X6, XZR, #2
+	ADD X7, XZR #7000
+	UCVTF D5, X5
+	UCVTF D6, X6
+	UCVTF D7, X7
+	FDIV D5, D5, D6 // Store the value of 1/2 as a double precision point
+	FMUL D6, D7, D8
+	FSUB D7, D7, D6
+	FSQRT D7, D7
+	FSUB D7, D5
 exit:
-	MOV X0, X5
-	UCVTF D0, X0
+	FMOV D0, D7
 	br	X30
 
 
