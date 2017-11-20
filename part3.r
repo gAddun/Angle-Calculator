@@ -73,10 +73,23 @@ inv_cos:
 	FMUL D6, D7, D8
 	FSUB D7, D7, D6
 	FSQRT D7, D7
-	FSUB D7, D5
+	FSUB D7, D7, D5
+	CMP X3, XZR
+	B.NE to_radians
 exit:
 	FMOV D0, D7
 	br	X30
+to_radians:
+	ADD X1, XZR, #22
+	ADD X2, XZR #7
+	ADD X3, XZR, #180
+	UCVTF D1, X1
+	UCVTF D2, X2
+	UCVTF D3, X3
+	FDIV D1, D1, D2 //D1 contains approximate value of pi
+	FMUL D7, D7, D1 //degrees * pi
+	FDIV D7, D7, D3// (degrees * pi)/180
+	B exit
 
 
 //X1 address of first vector
