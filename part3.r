@@ -4,6 +4,7 @@ part_three:
 	ADD X4, XZR, XZR //Index into the array
 	ADD X5, XZR, XZR //Sum variable for dot product
 	SUB X8, XZR, XZR //Counter for loop on accessing arrays
+	FSUB D5, D5, D5
 	ADD X11, XZR, XZR //X11 is control logic for branching int pre_norm
 	//Registers for double values converted from int
 	FSUB D9, D9, D9//Clear D registers
@@ -24,7 +25,6 @@ pre_norm:
 	//clear reigster
 	ADD X4, XZR, XZR
 	ADD X8, XZR, XZR
-	FSUB, D5, D5, D5
 	CMP X11, XZR //If the norm_a procedure has finished executing
 	B.NE pre_norm_b //Branch to pre_norm_b
 //Find the length of a
@@ -36,7 +36,7 @@ norm_a:
 	FMUL D9, D9, D9 //Square the element i in the array
 	FADD D5, D9, D5 //Add sqaured elements together
 	ADD X4, X4, #8 //increment index into array
-	ADD X8, X8 #1 //incerment counter
+	ADD X8, X8, #1 //incerment counter
 	ADD X11, X11, #1 //control for branch in pre_norm to pre_norm_b
 	B norm_a //loop back to this procedure
 pre_norm_b:
@@ -63,26 +63,36 @@ inv_cos:
 	FSUB D5, D5, D5
 	FSUB D6, D6, D6
 	FSUB D7, D7, D7
-	ADD X5, XZR, #1
-	ADD, X6, XZR, #2
-	ADD X7, XZR #7000
+	SUB X5, X5, X5
+	SUB X6, X6, X6
+	SUB X7, X7, X7
+	SUB X8, X8, X8
+	ADD X8, X8, #10
+	ADD X5, X5, #1
+	ADD X6, X6, #2
+	ADD X7, X7, #700
 	UCVTF D5, X5
 	UCVTF D6, X6
 	UCVTF D7, X7
+	UCVTF D9, X8
+	FMUL D7, D7, D9 // Store the value of 7000
 	FDIV D5, D5, D6 // Store the value of 1/2 as a double precision point
-	FMUL D6, D7, D8
-	FSUB D7, D7, D6
-	FSQRT D7, D7
-	FSUB D7, D7, D5
-	CMP X3, XZR
+	FMUL D6, D7, D8 //7000 * cosine value
+	FSUB D7, D7, D6 // (7000 - 7000X)
+	FSQRT D7, D7 // SQRT(7000 - 7000X)
+	FSUB D7, D7, D5 //SQRT(7000 - 7000X) = arccos(X)
+	CMP X3, XZR //return radians or degrees
 	B.NE to_radians
 exit:
 	FMOV D0, D7
-	B	X30
+	Br X30
 to_radians:
-	ADD X1, XZR, #22
-	ADD X2, XZR #7
-	ADD X3, XZR, #180
+	SUB X1, X1, X1
+	SUB X2, X2, X2
+	SUB X3, X3, X3
+	ADD X1, X1, #22
+	ADD X2, X2, #7
+	ADD X3, X3, #180
 	UCVTF D1, X1
 	UCVTF D2, X2
 	UCVTF D3, X3
@@ -91,7 +101,4 @@ to_radians:
 	FDIV D7, D7, D3// (degrees * pi)/180
 	B exit
 
-
-//X1 address of first vector
-//X2 address of second vector
 //X3 number of elements
